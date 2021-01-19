@@ -50,6 +50,8 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE" };
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     @SuppressLint("NewApi")
     @Override
@@ -70,8 +72,8 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         mEditText = findViewById(R.id.editText1);
         mTextBitrate = findViewById(R.id.bitrate);
         editTextPort = findViewById(R.id.editTextPort);
-        SharedPreferences sharedPreferences= this.getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        sharedPreferences= this.getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         editor.putString("PORT_CONFIG_VALUE", editTextPort.getText().toString());
         editor.apply();
 
@@ -105,6 +107,8 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.button1) {
+            editor.putString("PORT_CONFIG_VALUE", editTextPort.getText().toString());
+            editor.apply();
             startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_STREAM);
             mButton1.setEnabled(false);
         } else {
