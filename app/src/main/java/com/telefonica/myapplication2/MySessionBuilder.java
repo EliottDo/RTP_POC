@@ -21,6 +21,7 @@
 package com.telefonica.myapplication2;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Camera.CameraInfo;
 import android.preference.PreferenceManager;
 
@@ -130,12 +131,13 @@ public class MySessionBuilder {
 		}
 
 		if (session.getVideoTrack()!=null) {
+			SharedPreferences sharedPreferences= getContext().getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
 			//H264VideoStream video = session.getVideoTrack();
 			H264ScreenStream video = session.getVideoTrack();
 			video.setVideoQuality(mVideoQuality);
 			//video.setSurfaceView(mSurfaceView);
 			//video.setPreviewOrientation(mOrientation);
-			video.setDestinationPorts(5006);
+			video.setDestinationPorts(Integer.parseInt(sharedPreferences.getString("PORT_CONFIG_VALUE", "5006")));
 		}
 
 		if (session.getAudioTrack()!=null) {

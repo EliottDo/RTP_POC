@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
 
     private Button mButton1;
     private EditText mEditText;
+    private EditText editTextPort;
     private Session mSession;
     private TextView mTextBitrate;
     private int REQUEST_CODE_STREAM = 179; //random num
@@ -64,9 +66,14 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
             }
         }
 
-        mButton1 = (Button) findViewById(R.id.button1);
-        mEditText = (EditText) findViewById(R.id.editText1);
-        mTextBitrate = (TextView) findViewById(R.id.bitrate);
+        mButton1 = findViewById(R.id.button1);
+        mEditText = findViewById(R.id.editText1);
+        mTextBitrate = findViewById(R.id.bitrate);
+        editTextPort = findViewById(R.id.editTextPort);
+        SharedPreferences sharedPreferences= this.getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("PORT_CONFIG_VALUE", editTextPort.getText().toString());
+        editor.apply();
 
         mButton1.setOnClickListener(this);
 

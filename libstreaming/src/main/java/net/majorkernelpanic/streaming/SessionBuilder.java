@@ -33,6 +33,7 @@ import net.majorkernelpanic.streaming.video.H264Stream;
 import net.majorkernelpanic.streaming.video.VideoQuality;
 import net.majorkernelpanic.streaming.video.VideoStream;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Camera.CameraInfo;
 import android.preference.PreferenceManager;
 
@@ -136,11 +137,12 @@ public class SessionBuilder {
 		}
 
 		if (session.getVideoTrack()!=null) {
+			SharedPreferences sharedPreferences= getContext().getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
 			VideoStream video = session.getVideoTrack();
 			video.setVideoQuality(mVideoQuality);
 			video.setSurfaceView(mSurfaceView);
 			video.setPreviewOrientation(mOrientation);
-			video.setDestinationPorts(5006);
+			video.setDestinationPorts(Integer.parseInt(sharedPreferences.getString("PORT_CONFIG_VALUE", "5006")));
 		}
 
 		if (session.getAudioTrack()!=null) {
