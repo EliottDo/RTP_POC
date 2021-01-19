@@ -108,7 +108,7 @@ public class Session {
 	private long mTimestamp;
 
 	private AudioStream mAudioStream = null;
-	private MyH264Stream mVideoStream = null;
+	private H264ScreenStream mVideoStream = null;
 
 	private Callback mCallback;
 	private Handler mMainHandler;
@@ -183,7 +183,7 @@ public class Session {
 	}
 
 	/** You probably don't need to use that directly, use the {@link SessionBuilder}. */
-	void addVideoTrack(MyH264Stream track) {
+	void addVideoTrack(H264ScreenStream track) {
 		removeVideoTrack();
 		mVideoStream = track;
 	}
@@ -199,7 +199,6 @@ public class Session {
 	/** You probably don't need to use that directly, use the {@link SessionBuilder}. */
 	void removeVideoTrack() {
 		if (mVideoStream != null) {
-			mVideoStream.stopPreview();
 			mVideoStream = null;
 		}
 	}
@@ -210,7 +209,7 @@ public class Session {
 	}
 
 	/** Returns the underlying {@link VideoStream} used by the {@link Session}. */
-	public MyH264Stream getVideoTrack() {
+	public H264ScreenStream getVideoTrack() {
 		return mVideoStream;
 	}	
 
@@ -258,46 +257,6 @@ public class Session {
 	public void setVideoQuality(VideoQuality quality) {
 		if (mVideoStream != null) {
 			mVideoStream.setVideoQuality(quality);
-		}
-	}
-
-	/**
-	 * Sets a Surface to show a preview of recorded media (video). <br />
-	 * You can call this method at any time and changes will take 
-	 * effect next time you call {@link #start()} or {@link #startPreview()}.
-	 */
-	public void setSurfaceView(final SurfaceView view) {
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (mVideoStream != null) {
-					mVideoStream.setSurfaceView(view);
-				}
-			}				
-		});
-	}
-
-	/** 
-	 * Sets the orientation of the preview. <br />
-	 * You can call this method at any time and changes will take 
-	 * effect next time you call {@link #configure()}.
-	 * @param orientation The orientation of the preview
-	 */
-	public void setPreviewOrientation(int orientation) {
-		if (mVideoStream != null) {
-			mVideoStream.setPreviewOrientation(orientation);
-		}
-	}	
-
-	/** 
-	 * Sets the configuration of the stream. <br />
-	 * You can call this method at any time and changes will take 
-	 * effect next time you call {@link #configure()}.
-	 * @param quality Quality of the stream
-	 */
-	public void setAudioQuality(AudioQuality quality) {
-		if (mAudioStream != null) {
-			mAudioStream.setAudioQuality(quality);
 		}
 	}
 
@@ -532,7 +491,6 @@ public class Session {
 
 	/**
 	 * Asynchronously starts the camera preview. <br />
-	 * You should of course pass a {@link SurfaceView} to {@link #setSurfaceView(SurfaceView)}
 	 * before calling this method. Otherwise, the {@link Callback#onSessionError(int, int, Exception)}
 	 * callback will be called with {@link #ERROR_INVALID_SURFACE}.
 	 */
@@ -542,7 +500,6 @@ public class Session {
 			public void run() {
 				if (mVideoStream != null) {
 					try {
-						mVideoStream.startPreview();
 						postPreviewStarted();
 						mVideoStream.configure();
 					} catch (CameraInUseException e) {
@@ -563,19 +520,6 @@ public class Session {
 		});
 	}
 
-	/**
-	 * Asynchronously stops the camera preview.
-	 */
-	public void stopPreview() {
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (mVideoStream != null) {
-					mVideoStream.stopPreview();
-				}
-			}
-		});
-	}	
 
 	/**	Switch between the front facing and the back facing camera of the phone. <br />
 	 * If {@link #startPreview()} has been called, the preview will be  briefly interrupted. <br />

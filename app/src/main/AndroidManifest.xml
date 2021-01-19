@@ -35,6 +35,9 @@
             </intent-filter>
         </activity>
         <service android:name="com.telefonica.myapplication2.RtspServer" />
+        <service android:name=".MyDisplayService"
+            android:foregroundServiceType="mediaProjection"
+            />
     </application>
 
 </manifest>

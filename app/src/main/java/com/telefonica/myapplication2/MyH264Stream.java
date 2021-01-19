@@ -21,6 +21,7 @@
 package com.telefonica.myapplication2;
 
 
+import android.content.Context;
 import android.graphics.ImageFormat;
 
 import android.hardware.Camera;
@@ -50,7 +51,7 @@ import java.util.Arrays;
  * to configure the stream. You can then call {@link #start()} to start the RTP stream.
  * Call {@link #stop()} to stop the stream.
  */
-public class MyH264Stream extends H264VideoStream {
+public class MyH264Stream extends H264ScreenStream {
 
     public final static String TAG = "MyH264Stream";
 
@@ -64,11 +65,8 @@ public class MyH264Stream extends H264VideoStream {
      * Constructs the H.264 stream.
      * Uses CAMERA_FACING_BACK by default.
      */
-    public MyH264Stream() {
-        super();
-        mMimeType = "video/avc";
-        mCameraImageFormat = ImageFormat.NV21;
-        mVideoEncoder = MediaRecorder.VideoEncoder.H264;
+    public MyH264Stream(Context context) {
+        super(context);
         mPacketizer = new H264Packetizer();
     }
 
@@ -124,22 +122,22 @@ public class MyH264Stream extends H264VideoStream {
     private MP4Config testH264() throws IllegalStateException, IOException {
         MediaCodec encoder = null;
 
-        MediaCodecInfo selectCodec = selectCodec(H264VideoStream.MIME_TYPE, H264VideoStream.ENCODER_NAME);
+        MediaCodecInfo selectCodec = selectCodec(H264ScreenStream.MIME_TYPE, H264ScreenStream.ENCODER_NAME);
         if (selectCodec == null) {
             Log.e(TAG, "Unable to find an appropriate codec for video/avc");
             Log.d(TAG, "releasing codecs");
             return null;
         }
         Log.d(TAG, "found codec: " + selectCodec.getName());
-        int selectColorFormat = selectColorFormat(selectCodec, H264VideoStream.MIME_TYPE);
+        int selectColorFormat = selectColorFormat(selectCodec, H264ScreenStream.MIME_TYPE);
 
 
         Log.d(TAG, "found colorFormat: " + selectColorFormat);
-        MediaFormat createVideoFormat = MediaFormat.createVideoFormat(H264VideoStream.MIME_TYPE, this.mQuality.resX, this.mQuality.resY);
+        MediaFormat createVideoFormat = MediaFormat.createVideoFormat(H264ScreenStream.MIME_TYPE, this.mQuality.resX, this.mQuality.resY);
         createVideoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, selectColorFormat);
         createVideoFormat.setInteger(MediaFormat.KEY_BIT_RATE, this.mQuality.bitrate);
         createVideoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, this.mQuality.framerate);
-        createVideoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, H264VideoStream.IFRAME_INTERVAL);
+        createVideoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, H264ScreenStream.IFRAME_INTERVAL);
 
 
         Log.d(TAG, "format: " + createVideoFormat);

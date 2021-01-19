@@ -122,7 +122,7 @@ public class MySessionBuilder {
 
 		switch (mVideoEncoder) {
 		case VIDEO_H264:
-			MyH264Stream stream = new MyH264Stream();
+			MyH264Stream stream = new MyH264Stream(getContext());
 			if (mContext!=null)
 				stream.setPreferences(PreferenceManager.getDefaultSharedPreferences(mContext));
 			session.addVideoTrack(stream);
@@ -130,10 +130,11 @@ public class MySessionBuilder {
 		}
 
 		if (session.getVideoTrack()!=null) {
-			H264VideoStream video = session.getVideoTrack();
+			//H264VideoStream video = session.getVideoTrack();
+			H264ScreenStream video = session.getVideoTrack();
 			video.setVideoQuality(mVideoQuality);
-			video.setSurfaceView(mSurfaceView);
-			video.setPreviewOrientation(mOrientation);
+			//video.setSurfaceView(mSurfaceView);
+			//video.setPreviewOrientation(mOrientation);
 			video.setDestinationPorts(5006);
 		}
 
