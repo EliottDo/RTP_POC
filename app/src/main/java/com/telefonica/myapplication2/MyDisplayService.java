@@ -61,10 +61,10 @@ public class MyDisplayService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "RTP Display service started");
-        endpoint = intent.getExtras().getString("endpoint");
-        Log.e(TAG, "endpoint = " + endpoint);
+        //endpoint = intent.getExtras().getString("endpoint");
+        //Log.e(TAG, "endpoint = " + endpoint);
 
-        int result = intent.getIntExtra("RESULT_CODE", -1);
+       int result = intent.getIntExtra("RESULT_CODE", -1);
         Intent resultData = intent.getParcelableExtra("RESULT_DATA");
         resultCode = result;
         data = resultData;
@@ -75,5 +75,10 @@ public class MyDisplayService extends Service {
 
     private void prepareStreamRtp() {
         H264ScreenStream.setIntentResult(resultCode, data);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
     }
 }

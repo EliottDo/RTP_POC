@@ -12,6 +12,7 @@ import android.media.MediaFormat;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
@@ -70,10 +71,16 @@ public class H264ScreenStream extends MediaStream {
         @SuppressLint({"LongLogTag", "NewApi"})
        // @override
         public void onStop() {
-            stop();
+
             Log.v(TAG, "Recording Stopped");
-            mMediaProjection.unregisterCallback(this);
-            mMediaProjection = null;
+            if (mMediaProjection != null) {
+                mMediaProjection.unregisterCallback(this);
+                mMediaProjection.stop();
+                mMediaProjection = null;
+            }
+            stop();
+
+
         }
     };
     private Context mContext;
@@ -192,7 +199,19 @@ public class H264ScreenStream extends MediaStream {
     public synchronized void stop() {
         super.stop();
         destroyDisplay(mDisplay);
-        mSurface.release();
+        destroyVirtualDisplay();
+
+        if (mMediaProjection != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mMediaProjection.stop();
+            }
+            mMediaProjection = null;
+        }
+
+        if (mSurface != null) {
+            mSurface.release();
+            mSurface = null;
+        }
         Log.d(TAG,"Stream Stoped");
     }
     /**
@@ -443,6 +462,7 @@ public class H264ScreenStream extends MediaStream {
         if (mMediaProjection == null) {
             mMediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
         }
+        mMediaProjection.registerCallback(mMediaProjectionCallback, null);
         mMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) mContext.getSystemService(WINDOW_SERVICE);
         if (windowManager == null) {
@@ -453,7 +473,6 @@ public class H264ScreenStream extends MediaStream {
             Log.e(TAG, "recover activity to get context  mediaProjector = null");
             return;
         }
-        mMediaProjection.registerCallback(mMediaProjectionCallback, null);
         windowManager.getDefaultDisplay().getMetrics(mMetrics);
         mScreenDensity = mMetrics.densityDpi;
 

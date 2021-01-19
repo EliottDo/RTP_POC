@@ -23,7 +23,7 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/editTextPort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/layout1"
@@ -32,20 +32,22 @@
         android:ems="10"
         android:gravity="center"
         android:singleLine="true"
-        android:text="192.168.98.107" />
+        android:inputType="numberDecimal"
+        android:text="5004" />
 
     <EditText
-        android:id="@+id/editTextPort"
+        android:id="@+id/editText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/editText1"
+        android:layout_above="@+id/editTextPort"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:ems="10"
         android:gravity="center"
         android:singleLine="true"
-        android:inputType="numberDecimal"
-        android:text="5004" />
+        android:text="192.168.98.107" />
+
+
 
     <TextView
         android:id="@+id/bitrate"

@@ -50,8 +50,6 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE" };
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
 
     @SuppressLint("NewApi")
     @Override
@@ -72,8 +70,8 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         mEditText = findViewById(R.id.editText1);
         mTextBitrate = findViewById(R.id.bitrate);
         editTextPort = findViewById(R.id.editTextPort);
-        sharedPreferences= this.getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        SharedPreferences sharedPreferences= this.getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("PORT_CONFIG_VALUE", editTextPort.getText().toString());
         editor.apply();
 
@@ -107,13 +105,20 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.button1) {
-            editor.putString("PORT_CONFIG_VALUE", editTextPort.getText().toString());
-            editor.apply();
-            startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_STREAM);
-            mButton1.setEnabled(false);
-        } else {
-            // Switch between the two cameras
-            mSession.switchCamera();
+
+            if (mButton1.getText().toString().equals(getResources().getString(R.string.stop))) {
+                Log.d(TAG, "Service Stop mSession = " + mSession);
+                mButton1.setText(R.string.start);
+                Intent intent = new Intent(getApplicationContext(), MyDisplayService.class);
+                stopService(intent);
+                if(mSession != null) {
+                    mSession.stop();
+                }
+            } else  {
+                Log.d(TAG, "Service Start");
+                startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_STREAM);
+                //mButton1.setEnabled(false);
+            }
         }
     }
 
@@ -189,6 +194,7 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         if (data != null && (requestCode == REQUEST_CODE_STREAM
                 || requestCode == REQUEST_CODE_RECORD && resultCode == Activity.RESULT_OK)
         ) {
+            mButton1.setText(R.string.stop);
             Intent a = new Intent(getApplicationContext(), MyDisplayService.class);
             a.putExtra("RESULT_CODE", resultCode);
             a.putExtra("RESULT_DATA", data);
@@ -224,11 +230,12 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mSession.startPreview();
+        //mSession.startPreview();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         mSession.stop();
     }
+
 }
