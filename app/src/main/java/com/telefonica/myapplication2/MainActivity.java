@@ -1,7 +1,6 @@
 package com.telefonica.myapplication2;
 
 
-import net.majorkernelpanic.streaming.gl.SurfaceView;
 import net.majorkernelpanic.streaming.video.VideoQuality;
 
 import android.annotation.SuppressLint;
@@ -12,13 +11,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -26,6 +28,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 
 /**
@@ -41,8 +45,11 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     private EditText editTextPort;
     private Session mSession;
     private TextView mTextBitrate;
+    private SurfaceView sfScreenData;
+    String path = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+    private MediaPlayer mp;
+    private SurfaceHolder holder;
     private int REQUEST_CODE_STREAM = 179; //random num
-
     private int REQUEST_CODE_RECORD = 180; //random num
     private MediaProjectionManager mediaProjectionManager;
 
@@ -70,15 +77,28 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         mEditText = findViewById(R.id.editText1);
         mTextBitrate = findViewById(R.id.bitrate);
         editTextPort = findViewById(R.id.editTextPort);
+        sfScreenData = findViewById(R.id.sfScreenData);
+        holder = sfScreenData.getHolder();
+
+        holder.addCallback(this);
+        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mp = new MediaPlayer();
+        mp.setLooping(true);
+
         SharedPreferences sharedPreferences= this.getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("PORT_CONFIG_VALUE", editTextPort.getText().toString());
         editor.apply();
 
         mButton1.setOnClickListener(this);
+        sfScreenData.setOnClickListener(this);
 
         this.mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     private boolean checkPermissionAllGranted(String[] permissions) {
@@ -104,21 +124,27 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     @SuppressLint("NewApi")
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.button1) {
-
-            if (mButton1.getText().toString().equals(getResources().getString(R.string.stop))) {
-                Log.d(TAG, "Service Stop mSession = " + mSession);
-                mButton1.setText(R.string.start);
-                Intent intent = new Intent(getApplicationContext(), MyDisplayService.class);
-                stopService(intent);
-                if(mSession != null) {
-                    mSession.stop();
+        switch (v.getId()) {
+            case R.id.sfScreenData:
+                if(mp != null) {
+                    play();
                 }
-            } else  {
-                Log.d(TAG, "Service Start");
-                startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_STREAM);
-                //mButton1.setEnabled(false);
-            }
+                break;
+            case R.id.button1:
+                if (mButton1.getText().toString().equals(getResources().getString(R.string.stop))) {
+                    Log.d(TAG, "Service Stop mSession = " + mSession);
+                    mButton1.setText(R.string.start);
+                    Intent intent = new Intent(getApplicationContext(), MyDisplayService.class);
+                    stopService(intent);
+                    if(mSession != null) {
+                        mSession.stop();
+                    }
+                } else  {
+                    Log.d(TAG, "Service Start");
+                    startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_STREAM);
+                    //mButton1.setEnabled(false);
+                }
+                break;
         }
     }
 
@@ -181,11 +207,7 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         dialog.show();
     }
 
-    public void onActivityResult(
-            int requestCode,
-            int resultCode,
-            Intent data
-    ) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         Log.d(TAG, "Session stopped. data = " + data);
         Log.d(TAG, "Session stopped. requestCode = " + requestCode);
@@ -223,14 +245,15 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                               int height) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         //mSession.startPreview();
+        mp.setDisplay(holder);
+        play();
     }
 
     @Override
@@ -238,4 +261,13 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         mSession.stop();
     }
 
+    void play(){
+        try {
+            mp.setDataSource(path);
+            mp.prepare();
+        } catch (IllegalArgumentException | IllegalStateException | IOException e) {
+            e.printStackTrace();
+        }
+        mp.start();
+    }
 }
