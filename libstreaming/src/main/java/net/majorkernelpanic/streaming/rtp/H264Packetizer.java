@@ -106,13 +106,13 @@ public class H264Packetizer extends AbstractPacketizer implements Runnable {
 		stats.reset();
 		count = 0;
 
-		if (is instanceof MediaCodecInputStream) {
+//		if (is instanceof MediaCodecInputStream) {
 			streamType = 1;
 			socket.setCacheSize(0);
-		} else {
-			streamType = 0;	
-			socket.setCacheSize(400);
-		}
+//		} else {
+//			streamType = 0;
+//			socket.setCacheSize(400);
+//		}
 
 		try {
 			while (!Thread.interrupted()) {
@@ -153,9 +153,10 @@ public class H264Packetizer extends AbstractPacketizer implements Runnable {
 		} else if (streamType == 1) {
 			// NAL units are preceeded with 0x00000001
 			fill(header,0,5);
-			ts = ((MediaCodecInputStream)is).getLastBufferInfo().presentationTimeUs*1000L;
-			//ts += delay;
+			//ts = ((MediaCodecInputStream)is).getLastBufferInfo().presentationTimeUs*1000L;
+			ts += delay*1000;
 			naluLength = is.available()+1;
+			Log.d(TAG,"naluLength: "+naluLength + "   ts = " + ts);
 			if (!(header[0]==0 && header[1]==0 && header[2]==0)) {
 				// Turns out, the NAL units are not preceeded with 0x00000001
 				Log.e(TAG, "NAL units are not preceeded by 0x00000001");
@@ -178,7 +179,7 @@ public class H264Packetizer extends AbstractPacketizer implements Runnable {
 		// The stream already contains NAL unit type 7 or 8, we don't need 
 		// to add them to the stream ourselves
 		if (type == 7 || type == 8) {
-			Log.v(TAG,"SPS or PPS present in the stream.");
+			Log.d(TAG,"SPS or PPS present in the stream.");
 			count++;
 			if (count>4) {
 				sps = null;

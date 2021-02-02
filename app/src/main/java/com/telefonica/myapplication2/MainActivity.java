@@ -45,10 +45,6 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     private EditText editTextPort;
     private Session mSession;
     private TextView mTextBitrate;
-    private SurfaceView sfScreenData;
-    String path = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
-    private MediaPlayer mp;
-    private SurfaceHolder holder;
     private int REQUEST_CODE_STREAM = 179; //random num
     private int REQUEST_CODE_RECORD = 180; //random num
     private MediaProjectionManager mediaProjectionManager;
@@ -77,13 +73,6 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         mEditText = findViewById(R.id.editText1);
         mTextBitrate = findViewById(R.id.bitrate);
         editTextPort = findViewById(R.id.editTextPort);
-        sfScreenData = findViewById(R.id.sfScreenData);
-        holder = sfScreenData.getHolder();
-
-        holder.addCallback(this);
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        mp = new MediaPlayer();
-        mp.setLooping(true);
 
         SharedPreferences sharedPreferences= this.getSharedPreferences("PORT_CONFIG", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -91,7 +80,6 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         editor.apply();
 
         mButton1.setOnClickListener(this);
-        sfScreenData.setOnClickListener(this);
 
         this.mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
     }
@@ -125,11 +113,6 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sfScreenData:
-                if(mp != null) {
-                    play();
-                }
-                break;
             case R.id.button1:
                 if (mButton1.getText().toString().equals(getResources().getString(R.string.stop))) {
                     Log.d(TAG, "Service Stop mSession = " + mSession);
@@ -252,8 +235,6 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         //mSession.startPreview();
-        mp.setDisplay(holder);
-        play();
     }
 
     @Override
@@ -261,13 +242,4 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         mSession.stop();
     }
 
-    void play(){
-        try {
-            mp.setDataSource(path);
-            mp.prepare();
-        } catch (IllegalArgumentException | IllegalStateException | IOException e) {
-            e.printStackTrace();
-        }
-        mp.start();
-    }
 }

@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -326,7 +327,9 @@ public class H264ScreenStream extends MediaStream {
                 0, mSurface, null /*Callbacks*/, null /*Handler*/);
 
 
-        mPacketizer.setInputStream(new MediaCodecInputStream(mMediaCodec));
+        Socket mSocket = new Socket("localhost", 5151);
+        mPacketizer.setInputStream( mSocket.getInputStream());
+//        mPacketizer.setInputStream(new MediaCodecInputStream(mMediaCodec));
         mPacketizer.start();
         mStreaming = true;
     }
