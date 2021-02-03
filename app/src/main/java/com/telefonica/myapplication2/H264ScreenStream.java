@@ -58,7 +58,7 @@ public class H264ScreenStream extends MediaStream {
     protected static final String ENCODER_NAME="OMX.google.h264.encoder";
 
     //private AuthenticationActivity mAuthenticationActivity;
-    private MediaProjection mMediaProjection;
+//    private MediaProjection mMediaProjection;
     private VirtualDisplay mVirtualDisplay;
     private MediaCodec.BufferInfo mVideoBufferInfo;
     private IBinder mDisplay;
@@ -66,26 +66,26 @@ public class H264ScreenStream extends MediaStream {
     private int mScreenDensity = 320;
     private static int resultCode = -1;
     private static Intent data;
-    private MediaProjectionManager mediaProjectionManager;
+//    private MediaProjectionManager mediaProjectionManager;
 
     private  DisplayManager mDisplayManager;
 
-    private MediaProjection.Callback mMediaProjectionCallback = new MediaProjection.Callback() {
-        @SuppressLint({"LongLogTag", "NewApi"})
-       // @override
-        public void onStop() {
-
-            Log.v(TAG, "Recording Stopped");
-            if (mMediaProjection != null) {
-                mMediaProjection.unregisterCallback(this);
-                mMediaProjection.stop();
-                mMediaProjection = null;
-            }
-            stop();
-
-
-        }
-    };
+//    private MediaProjection.Callback mMediaProjectionCallback = new MediaProjection.Callback() {
+//        @SuppressLint({"LongLogTag", "NewApi"})
+//       // @override
+//        public void onStop() {
+//
+//            Log.v(TAG, "Recording Stopped");
+//            if (mMediaProjection != null) {
+//                mMediaProjection.unregisterCallback(this);
+//                mMediaProjection.stop();
+//                mMediaProjection = null;
+//            }
+//            stop();
+//
+//
+//        }
+//    };
     private Context mContext;
     protected VideoQuality mRequestedQuality = VideoQuality.DEFAULT_VIDEO_QUALITY.clone();
     protected VideoQuality mQuality = mRequestedQuality.clone();
@@ -112,10 +112,10 @@ public class H264ScreenStream extends MediaStream {
         //mContext = mAuthenticationActivity.getApplicationContext();
         mDisplayManager = context.getSystemService(DisplayManager.class);
         mContext = context;
-        mediaProjectionManager =
-                ((MediaProjectionManager) mContext.getSystemService(MEDIA_PROJECTION_SERVICE));
-        Log.i(TAG, "H264ScreenStream mContext= " +mContext );
-        Log.i(TAG, "H264ScreenStream mediaProjectionManager= " +mediaProjectionManager );
+//        mediaProjectionManager =
+//                ((MediaProjectionManager) mContext.getSystemService(MEDIA_PROJECTION_SERVICE));
+//        Log.i(TAG, "H264ScreenStream mContext= " +mContext );
+//        Log.i(TAG, "H264ScreenStream mediaProjectionManager= " +mediaProjectionManager );
 
         mMode = MODE_MEDIARECORDER_API;
         mPacketizer = new H264Packetizer();
@@ -210,12 +210,12 @@ public class H264ScreenStream extends MediaStream {
         destroyDisplay(mDisplay);
         destroyVirtualDisplay();
 
-        if (mMediaProjection != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mMediaProjection.stop();
-            }
-            mMediaProjection = null;
-        }
+//        if (mMediaProjection != null) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                mMediaProjection.stop();
+//            }
+//            mMediaProjection = null;
+//        }
 
         if (mSurface != null) {
             mSurface.release();
@@ -234,40 +234,40 @@ public class H264ScreenStream extends MediaStream {
         createSockets();
 
         try {
-            mMediaRecorder = new MediaRecorder();
-            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-            mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            mMediaRecorder.setVideoSize(mQuality.resX, mQuality.resY);
-            mMediaRecorder.setVideoFrameRate(mQuality.framerate);
-
-            // The bandwidth actually consumed is often above what was requested
-            mMediaRecorder.setVideoEncodingBitRate((int)(mRequestedQuality.bitrate * 0.8));
-
-            //int rotation =  mContext.getApplicationContext().getWindowManager().getDefaultDisplay().getRotation();
-            int orientation = ORIENTATIONS.get(90);
-            mMediaRecorder.setOrientationHint(orientation);
+//            mMediaRecorder = new MediaRecorder();
+//            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+//            mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+//            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+//            mMediaRecorder.setVideoSize(mQuality.resX, mQuality.resY);
+//            mMediaRecorder.setVideoFrameRate(mQuality.framerate);
+//
+//            // The bandwidth actually consumed is often above what was requested
+//            mMediaRecorder.setVideoEncodingBitRate((int)(mRequestedQuality.bitrate * 0.8));
+//
+//            //int rotation =  mContext.getApplicationContext().getWindowManager().getDefaultDisplay().getRotation();
+//            int orientation = ORIENTATIONS.get(90);
+//            mMediaRecorder.setOrientationHint(orientation);
 
             // We write the output of the camera in a local socket instead of a file !
             // This one little trick makes streaming feasible quiet simply: data from the camera
             // can then be manipulated at the other end of the socket
-            FileDescriptor fd = null;
-            if (sPipeApi == PIPE_API_PFD) {
-                fd = mParcelWrite.getFileDescriptor();
-            } else  {
-                fd = mSender.getFileDescriptor();
-            }
-            Log.d(TAG,"Set input= " + fd.valid());
-            mMediaRecorder.setOutputFile(fd);
-
-            mMediaRecorder.prepare();
+//            FileDescriptor fd = null;
+//            if (sPipeApi == PIPE_API_PFD) {
+//                fd = mParcelWrite.getFileDescriptor();
+//            } else  {
+//                fd = mSender.getFileDescriptor();
+//            }
+//            Log.d(TAG,"Set input= " + fd.valid());
+//            mMediaRecorder.setOutputFile(fd);
+//
+//            mMediaRecorder.prepare();
 // destroyVirtualDisplay();
-            Log.d(TAG, "encodeWithMediaRecorder: mQuality: " + mQuality + " mScreenDensity " + mScreenDensity
-                    + " mMediaRecorder " + mMediaRecorder.toString());
+//            Log.d(TAG, "encodeWithMediaRecorder: mQuality: " + mQuality + " mScreenDensity " + mScreenDensity
+//                    + " mMediaRecorder " + mMediaRecorder.toString());
             mVirtualDisplay = createVirtualDisplay();
 
-            mMediaRecorder.start();
-            Log.d(TAG,"Set input= " + fd.valid() + " toString= " + fd.toString());
+//            mMediaRecorder.start();
+//            Log.d(TAG,"Set input= " + fd.valid() + " toString= " + fd.toString());
 
 
         } catch (Exception e) {
@@ -359,6 +359,7 @@ public class H264ScreenStream extends MediaStream {
         Log.d(TAG, "testMediaRecorderAPI: " + key);
 
         if (mSettings != null && mSettings.contains(key) ) {
+            Log.d(TAG, " mSettings contains key ");
             String[] s = mSettings.getString(key, "").split(",");
             return new MP4Config(s[0],s[1],s[2]);
         }
@@ -380,66 +381,61 @@ public class H264ScreenStream extends MediaStream {
         }
         Log.d(TAG, "Test file has been create.");
 
-        try {
-            mMediaRecorder = new MediaRecorder();
-            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-            mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            mMediaRecorder.setVideoSize(mRequestedQuality.resX, mRequestedQuality.resY);
-            mMediaRecorder.setVideoFrameRate(mRequestedQuality.framerate);
-            mMediaRecorder.setVideoEncodingBitRate((int)(mRequestedQuality.bitrate * 0.8));
-            mMediaRecorder.setOutputFile(TESTFILE);
-            mMediaRecorder.setMaxDuration(3000);
-
-            // We wait a little and stop recording
-            mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
-                public void onInfo(MediaRecorder mr, int what, int extra) {
-                    Log.d(TAG,"MediaRecorder callback called !");
-                    if (what==MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                        Log.d(TAG,"MediaRecorder: MAX_DURATION_REACHED");
-                    } else if (what==MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
-                        Log.d(TAG,"MediaRecorder: MAX_FILESIZE_REACHED");
-                    } else if (what==MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN) {
-                        Log.d(TAG,"MediaRecorder: INFO_UNKNOWN");
-                    } else {
-                        Log.d(TAG,"WTF ?");
-                    }
-                    mLock.release();
-                }
-            });
-
-            // Start recording
-            mMediaRecorder.prepare();
+//        try {
+//            mMediaRecorder = new MediaRecorder();
+//            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+//            mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+//            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+//            mMediaRecorder.setVideoSize(mRequestedQuality.resX, mRequestedQuality.resY);
+//            mMediaRecorder.setVideoFrameRate(mRequestedQuality.framerate);
+//            mMediaRecorder.setVideoEncodingBitRate((int)(mRequestedQuality.bitrate * 0.8));
+//            mMediaRecorder.setOutputFile(TESTFILE);
+//            mMediaRecorder.setMaxDuration(3000);
+//
+//            // We wait a little and stop recording
+//            mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+//                public void onInfo(MediaRecorder mr, int what, int extra) {
+//                    Log.d(TAG,"MediaRecorder callback called !");
+//                    if (what==MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+//                        Log.d(TAG,"MediaRecorder: MAX_DURATION_REACHED");
+//                    } else if (what==MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
+//                        Log.d(TAG,"MediaRecorder: MAX_FILESIZE_REACHED");
+//                    } else if (what==MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN) {
+//                        Log.d(TAG,"MediaRecorder: INFO_UNKNOWN");
+//                    } else {
+//                        Log.d(TAG,"WTF ?");
+//                    }
+//                    mLock.release();
+//                }
+//            });
+//
+//            // Start recording
+//            mMediaRecorder.prepare();
 
             Log.i(TAG,"H264 Test start...");
 // destroyVirtualDisplay();
-            Log.d(TAG, "encodeWithMediaRecorder: mQuality: " + mQuality + " mScreenDensity " + mScreenDensity
-                    + " mMediaRecorder " + mMediaRecorder.toString());
-            mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenSharingDemo",
-                    mQuality.resX,mQuality.resY, mScreenDensity,
-                    0,
-                    mMediaRecorder.getSurface(), null , null );
-            mMediaRecorder.start();
-            Log.i(TAG,"H264 Test started...");
-            if (mLock.tryAcquire(6, TimeUnit.SECONDS)) {
-                Log.d(TAG,"MediaRecorder callback was called :)");
-                Thread.sleep(400);
-            } else {
-                Log.d(TAG,"MediaRecorder callback was not called after 6 seconds... :(");
-            }
-        } catch (IOException e) {
-            throw new ConfNotSupportedException(e.getMessage());
-        } catch (RuntimeException e) {
-            throw new ConfNotSupportedException(e.getMessage());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                mMediaRecorder.stop();
-            } catch (Exception e) {}
-            mMediaRecorder.release();
-            mMediaRecorder = null;
-        }
+            mVirtualDisplay = createVirtualDisplay();
+//            mMediaRecorder.start();
+//            Log.i(TAG,"H264 Test started...");
+//            if (mLock.tryAcquire(6, TimeUnit.SECONDS)) {
+//                Log.d(TAG,"MediaRecorder callback was called :)");
+//                Thread.sleep(400);
+//            } else {
+//                Log.d(TAG,"MediaRecorder callback was not called after 6 seconds... :(");
+//            }
+//        } catch (IOException e) {
+//            throw new ConfNotSupportedException(e.getMessage());
+//        } catch (RuntimeException e) {
+//            throw new ConfNotSupportedException(e.getMessage());
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                mMediaRecorder.stop();
+//            } catch (Exception e) {}
+//            mMediaRecorder.release();
+//            mMediaRecorder = null;
+//        }
 
         // Retrieve SPS & PPS & ProfileId with MP4Config
         MP4Config config = new MP4Config(TESTFILE);
@@ -465,20 +461,20 @@ public class H264ScreenStream extends MediaStream {
         //mMediaProjection = mAuthenticationActivity.getMediaProjection();
         Log.e(TAG, "resultCode = " + resultCode);
         Log.e(TAG, "data = " + data);
-        if (mMediaProjection == null) {
-            mMediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
-        }
-        mMediaProjection.registerCallback(mMediaProjectionCallback, null);
+//        if (mMediaProjection == null) {
+//            mMediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
+//        }
+//        mMediaProjection.registerCallback(mMediaProjectionCallback, null);
         mMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) mContext.getSystemService(WINDOW_SERVICE);
         if (windowManager == null) {
             Log.e(TAG, "recover activity to get context windowManager = null");
             return;
         }
-        if (mMediaProjection == null) {
-            Log.e(TAG, "recover activity to get context  mediaProjector = null");
-            return;
-        }
+//        if (mMediaProjection == null) {
+//            Log.e(TAG, "recover activity to get context  mediaProjector = null");
+//            return;
+//        }
         windowManager.getDefaultDisplay().getMetrics(mMetrics);
         mScreenDensity = mMetrics.densityDpi;
 

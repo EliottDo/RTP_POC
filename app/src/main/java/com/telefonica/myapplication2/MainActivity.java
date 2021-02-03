@@ -213,42 +213,44 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
         dialog.show();
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.d(TAG, "Session stopped. data = " + data);
-        Log.d(TAG, "Session stopped. requestCode = " + requestCode);
-        Log.d(TAG, "Session stopped. resultCode = " + resultCode);
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data != null && (requestCode == REQUEST_CODE_STREAM
-                || requestCode == REQUEST_CODE_RECORD && resultCode == Activity.RESULT_OK)
-        ) {
-            mButton1.setText(R.string.stop);
-            Intent a = new Intent(getApplicationContext(), MyDisplayService.class);
-            a.putExtra("RESULT_CODE", resultCode);
-            a.putExtra("RESULT_DATA", data);
-            startService(a);
-            H264ScreenStream.setIntentResult(resultCode, data);
-
-            // Configures the SessionBuilder
-            mSession = MySessionBuilder.getInstance()
-                    .setContext(getApplicationContext())
-                    .setAudioEncoder(MySessionBuilder.AUDIO_NONE)
-                    .setVideoEncoder(MySessionBuilder.VIDEO_H264)
-                    .setCallback(this)
-                    .setVideoQuality(new VideoQuality(1280, 720, 30, 5000000))
-                    .build();
-
-            mSession.setDestination(mEditText.getText().toString());
-            if (!mSession.isStreaming()) {
-                mSession.configure();
-            } else {
-                mSession.stop();
-            }
-        } else {
-            Toast.makeText(this, "No permissions available", Toast.LENGTH_SHORT).show();
-            mButton1.setText("Start");
-        }
-    }
+    // we get data from 5151 port, so dont need to record screen.
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//
+//        Log.d(TAG, "Session stopped. data = " + data);
+//        Log.d(TAG, "Session stopped. requestCode = " + requestCode);
+//        Log.d(TAG, "Session stopped. resultCode = " + resultCode);
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (data != null && (requestCode == REQUEST_CODE_STREAM
+//                || requestCode == REQUEST_CODE_RECORD && resultCode == Activity.RESULT_OK)
+//        ) {
+//            mButton1.setText(R.string.stop);
+//            Intent a = new Intent(getApplicationContext(), MyDisplayService.class);
+//            a.putExtra("RESULT_CODE", resultCode);
+//            a.putExtra("RESULT_DATA", data);
+//            startService(a);
+//            H264ScreenStream.setIntentResult(resultCode, data);
+//
+//            // Configures the SessionBuilder
+//            mSession = MySessionBuilder.getInstance()
+//                    .setContext(getApplicationContext())
+//                    .setAudioEncoder(MySessionBuilder.AUDIO_NONE)
+//                    .setVideoEncoder(MySessionBuilder.VIDEO_H264)
+//                    .setCallback(this)
+//                    .setVideoQuality(new VideoQuality(1280, 720, 30, 5000000))
+//                    .build();
+//
+//            mSession.setDestination(mEditText.getText().toString());
+//            if (!mSession.isStreaming()) {
+//                mSession.configure();
+//            } else {
+//                mSession.stop();
+//            }
+//        } else {
+//            Toast.makeText(this, "No permissions available", Toast.LENGTH_SHORT).show();
+//            mButton1.setText("Start");
+//        }
+//    }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
