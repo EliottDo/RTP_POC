@@ -124,7 +124,30 @@ public class MainActivity extends Activity implements OnClickListener, Session.C
                     }
                 } else  {
                     Log.d(TAG, "Service Start");
-                    startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_STREAM);
+
+                    if (mButton1.getText().equals(getText(R.string.start))) {
+                        mButton1.setText(R.string.stop);
+
+                        // Configures the SessionBuilder
+                        mSession = MySessionBuilder.getInstance()
+                                .setContext(getApplicationContext())
+                                .setAudioEncoder(MySessionBuilder.AUDIO_NONE)
+                                .setVideoEncoder(MySessionBuilder.VIDEO_H264)
+                                .setCallback(this)
+                                .setVideoQuality(new VideoQuality(1280, 720, 30, 5000000))
+                                .build();
+
+                        mSession.setDestination(mEditText.getText().toString());
+                        if (!mSession.isStreaming()) {
+                            mSession.configure();
+                        } else {
+                            mSession.stop();
+                        }
+                    } else {
+                        Toast.makeText(this, "No permissions available", Toast.LENGTH_SHORT).show();
+                        mButton1.setText("Start");
+                    }
+//                    startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_STREAM);
                     //mButton1.setEnabled(false);
                 }
                 break;

@@ -68,6 +68,8 @@ public class H264ScreenStream extends MediaStream {
     private static Intent data;
     private MediaProjectionManager mediaProjectionManager;
 
+    private  DisplayManager mDisplayManager;
+
     private MediaProjection.Callback mMediaProjectionCallback = new MediaProjection.Callback() {
         @SuppressLint({"LongLogTag", "NewApi"})
        // @override
@@ -108,6 +110,7 @@ public class H264ScreenStream extends MediaStream {
     public H264ScreenStream(Context context) {
         //mAuthenticationActivity = authenticationActivity;
         //mContext = mAuthenticationActivity.getApplicationContext();
+        mDisplayManager = context.getSystemService(DisplayManager.class);
         mContext = context;
         mediaProjectionManager =
                 ((MediaProjectionManager) mContext.getSystemService(MEDIA_PROJECTION_SERVICE));
@@ -116,7 +119,12 @@ public class H264ScreenStream extends MediaStream {
 
         mMode = MODE_MEDIARECORDER_API;
         mPacketizer = new H264Packetizer();
-        createProjector();
+//        createProjector();
+    }
+
+    private VirtualDisplay createVirtualDisplay() {
+        return mDisplayManager.createVirtualDisplay("Cluster", mQuality.resX, mQuality.resY, mScreenDensity,
+                null, 0 /* flags */, null, null );
     }
 
     public static void setIntentResult(int iResultCode, Intent iData) {
@@ -256,10 +264,7 @@ public class H264ScreenStream extends MediaStream {
 // destroyVirtualDisplay();
             Log.d(TAG, "encodeWithMediaRecorder: mQuality: " + mQuality + " mScreenDensity " + mScreenDensity
                     + " mMediaRecorder " + mMediaRecorder.toString());
-            mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenSharingDemo",
-                    mQuality.resX, mQuality.resY, mScreenDensity,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                    mMediaRecorder.getSurface(), null , null );
+            mVirtualDisplay = createVirtualDisplay();
 
             mMediaRecorder.start();
             Log.d(TAG,"Set input= " + fd.valid() + " toString= " + fd.toString());
@@ -322,9 +327,7 @@ public class H264ScreenStream extends MediaStream {
 
         Log.d(TAG,"MediaCodec started video content w= " + mQuality.resX + " h= " + mQuality.resY + " bitrate= "
                 + mQuality.bitrate + " framerate= " + mQuality.framerate);
-        mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenSharingDemo",
-                mQuality.resX,mQuality.resY, mScreenDensity,
-                0, mSurface, null /*Callbacks*/, null /*Handler*/);
+        mVirtualDisplay = createVirtualDisplay();
 
 
         Socket mSocket = new Socket("localhost", 5151);
